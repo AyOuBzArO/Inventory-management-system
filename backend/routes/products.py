@@ -1,5 +1,6 @@
 # backend/routes/products.py
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+import shutil, uuid, os
 from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models.product import Product
@@ -68,3 +69,12 @@ def get_stats(db: Session = Depends(get_db), user_id: int = Depends(get_current_
         "low_stock_items": low_stock,
         "total_inventory_value": float(total_value)
     }
+
+@router.post("/upload-image")
+def upload_image(file: UploadFile = File(...), user_id: int = Depends(get_current_user)):
+    ext = file.filename.split(".")[-1]
+    filename = f"{uuid.uuid4()}.{ext}"
+    path = f"uploads/{filename}"
+    with open(path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    return {"image_url": f"/uploads/{filename}"}

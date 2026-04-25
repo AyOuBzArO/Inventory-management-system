@@ -10,4 +10,5 @@ class Product(Base):
     description = Column(Text)
     quantity = Column(Integer, default=0)
     price = Column(DECIMAL(10, 2), nullable=False)
+    image = Column(String(255), nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())

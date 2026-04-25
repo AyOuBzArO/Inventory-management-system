@@ -5,21 +5,38 @@
     <title>IMS - Add Product</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); width: 440px; }
-        h2 { margin-bottom: 24px; color: #1a1a2e; }
-        label { font-size: 13px; color: #555; margin-bottom: 4px; display: block; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); width: 480px; }
+        .header { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+        .header img { height: 36px; }
+        .header h2 { font-size: 20px; color: #0a2e2e; }
+        label { font-size: 13px; color: #444; margin-bottom: 6px; display: block; font-weight: 500; }
+        input, textarea { width: 100%; padding: 12px 16px; margin-bottom: 18px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 14px; outline: none; transition: border 0.2s; font-family: inherit; }
+        input:focus, textarea:focus { border-color: #1a6b5a; }
         textarea { height: 80px; resize: none; }
-        .buttons { display: flex; gap: 12px; }
-        button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
-        .btn-save { background: #4f46e5; color: white; }
-        .btn-cancel { background: #e2e8f0; color: #333; }
+        .image-preview { width: 100%; height: 160px; border: 2px dashed #e0e0e0; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; cursor: pointer; overflow: hidden; transition: border 0.2s; }
+        .image-preview:hover { border-color: #1a6b5a; }
+        .image-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .image-preview span { color: #aaa; font-size: 14px; }
+        .buttons { display: flex; gap: 12px; margin-top: 4px; }
+        button { flex: 1; padding: 13px; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .btn-save { background: #1a6b5a; color: white; }
+        .btn-save:hover { background: #0a2e2e; }
+        .btn-cancel { background: #f5f5f5; color: #333; }
+        .btn-cancel:hover { background: #e0e0e0; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2 id="title">Add Product</h2>
+        <div class="header">
+            <img src="logo.png" alt="IMS">
+            <h2 id="title">Add Product</h2>
+        </div>
+        <label>Product Photo</label>
+        <div class="image-preview" id="preview" onclick="document.getElementById('imgInput').click()">
+            <span>Click to upload photo</span>
+        </div>
+        <input type="file" id="imgInput" accept="image/*" style="display:none" onchange="previewImage(event)">
         <label>Name</label>
         <input type="text" id="name" placeholder="Product name" />
         <label>Description</label>
@@ -30,17 +47,16 @@
         <input type="number" id="price" placeholder="0.00" step="0.01" />
         <div class="buttons">
             <button class="btn-cancel" onclick="window.location.href='index.html'">Cancel</button>
-            <button class="btn-save" onclick="save()">Save</button>
+            <button class="btn-save" onclick="save()">Save Product</button>
         </div>
     </div>
-
     <script>
         const token = localStorage.getItem('token');
         if (!token) window.location.href = 'login.html';
-
         const headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
+        let uploadedImageUrl = null;
 
         if (productId) {
             document.getElementById('title').textContent = 'Edit Product';
@@ -51,23 +67,48 @@
                     document.getElementById('description').value = p.description || '';
                     document.getElementById('quantity').value = p.quantity;
                     document.getElementById('price').value = p.price;
+                    if (p.image) {
+                        uploadedImageUrl = p.image;
+                        document.getElementById('preview').innerHTML = `<img src="http://127.0.0.1:8000${p.image}">`;
+                    }
                 });
         }
 
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('preview').innerHTML = `<img src="${e.target.result}">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadImage() {
+            const file = document.getElementById('imgInput').files[0];
+            if (!file) return null;
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('http://127.0.0.1:8000/products/upload-image', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token },
+                body: formData
+            });
+            const data = await res.json();
+            return data.image_url;
+        }
+
         async function save() {
+            const imageUrl = await uploadImage() || uploadedImageUrl;
             const body = {
                 name: document.getElementById('name').value,
                 description: document.getElementById('description').value,
                 quantity: parseInt(document.getElementById('quantity').value),
-                price: parseFloat(document.getElementById('price').value)
+                price: parseFloat(document.getElementById('price').value),
+                image: imageUrl
             };
-
-            const url = productId
-                ? `http://127.0.0.1:8000/products/${productId}`
-                : 'http://127.0.0.1:8000/products';
-
+            const url = productId ? `http://127.0.0.1:8000/products/${productId}` : 'http://127.0.0.1:8000/products';
             const method = productId ? 'PUT' : 'POST';
-
             const res = await fetch(url, { method, headers, body: JSON.stringify(body) });
             if (res.ok) window.location.href = 'index.html';
             else alert('Error saving product');
