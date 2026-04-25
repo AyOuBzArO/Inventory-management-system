@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IMS - Add Product</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); width: 440px; }
+        h2 { margin-bottom: 24px; color: #1a1a2e; }
+        label { font-size: 13px; color: #555; margin-bottom: 4px; display: block; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        textarea { height: 80px; resize: none; }
+        .buttons { display: flex; gap: 12px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
+        .btn-save { background: #4f46e5; color: white; }
+        .btn-cancel { background: #e2e8f0; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 id="title">Add Product</h2>
+        <label>Name</label>
+        <input type="text" id="name" placeholder="Product name" />
+        <label>Description</label>
+        <textarea id="description" placeholder="Description (optional)"></textarea>
+        <label>Quantity</label>
+        <input type="number" id="quantity" placeholder="0" />
+        <label>Price ($)</label>
+        <input type="number" id="price" placeholder="0.00" step="0.01" />
+        <div class="buttons">
+            <button class="btn-cancel" onclick="window.location.href='index.html'">Cancel</button>
+            <button class="btn-save" onclick="save()">Save</button>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        const headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id');
+
+        if (productId) {
+            document.getElementById('title').textContent = 'Edit Product';
+            fetch(`http://127.0.0.1:8000/products/${productId}`, { headers })
+                .then(r => r.json())
+                .then(p => {
+                    document.getElementById('name').value = p.name;
+                    document.getElementById('description').value = p.description || '';
+                    document.getElementById('quantity').value = p.quantity;
+                    document.getElementById('price').value = p.price;
+                });
+        }
+
+        async function save() {
+            const body = {
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                quantity: parseInt(document.getElementById('quantity').value),
+                price: parseFloat(document.getElementById('price').value)
+            };
+
+            const url = productId
+                ? `http://127.0.0.1:8000/products/${productId}`
+                : 'http://127.0.0.1:8000/products';
+
+            const method = productId ? 'PUT' : 'POST';
+
+            const res = await fetch(url, { method, headers, body: JSON.stringify(body) });
+            if (res.ok) window.location.href = 'index.html';
+            else alert('Error saving product');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+    "cSpell.words": [
+        "dotenv",
+        "mysecretkey",
+        "pycache",
+        "pymysql",
+        "sessionmaker",
+        "uvicorn",
+        "venv"
+    ]
+}
