@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from backend.database import engine, Base
-from backend.models import user, product
-from backend.routes import auth, products
+from backend.models import user, product, sale
+from backend.routes import auth, products, sales
 import os
 
 Base.metadata.create_all(bind=engine)
@@ -23,6 +23,7 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.include_router(auth.router)
 app.include_router(products.router)
+app.include_router(sales.router)
 
 @app.get("/health")
 def health_check():
