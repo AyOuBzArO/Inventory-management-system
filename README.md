@@ -1,6 +1,6 @@
 # Inventory Management System
 
-A full-stack web application to manage product inventory with authentication, CRUD operations, stock tracking, sales recording, and statistics dashboard.
+A full-stack web application to manage product inventory with authentication, CRUD operations, stock tracking, sales recording, and a statistics dashboard.
 
 ## Tech Stack
 
@@ -12,7 +12,7 @@ A full-stack web application to manage product inventory with authentication, CR
 
 ## Features
 
-- User authentication (register / login) with JWT
+- User authentication (register/login) with JWT
 - Product management (add, view, edit, delete, image upload)
 - Stock tracking with low-stock alerts
 - Sales recording with automatic stock update
@@ -108,7 +108,7 @@ pip install -r requirements.txt
 uvicorn backend.main:app --reload
 ```
 
-Make sure MySQL is running and your `.env` file is configured:
+Make sure MySQL is running, and your `.env` file is configured:
 
 ```env
 DATABASE_URL=mysql+pymysql://root:@localhost/inventory_db
@@ -132,4 +132,4 @@ See `/docs` folder for:
 
 ## Author
 
-Ayoub — 2026
+Ayoub ZARKOUNI.
