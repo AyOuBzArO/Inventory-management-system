@@ -5,7 +5,7 @@ A full-stack web application to manage product inventory with authentication, CR
 ## Tech Stack
 
 - **Backend:** FastAPI (Python)
-- **Database:** MySQL + SQLAlchemy
+- **Database:** SQLite + SQLAlchemy
 - **Frontend:** HTML / CSS / JavaScript
 - **Auth:** JWT Tokens
 - **DevOps:** Docker + Docker Compose
@@ -91,6 +91,12 @@ A full-stack web application to manage product inventory with authentication, CR
 docker-compose up --build
 ```
 
+Or pull directly from Docker Hub:
+
+```bash
+docker pull ayoubzaro/inventory-management-system:latest
+```
+
 Then open:
 - API docs: http://localhost:8000/docs
 - Frontend: open `frontend/index.html` in your browser
@@ -108,12 +114,14 @@ pip install -r requirements.txt
 uvicorn backend.main:app --reload
 ```
 
-Make sure MySQL is running, and your `.env` file is configured:
+Your `.env` file should contain:
 
 ```env
-DATABASE_URL=mysql+pymysql://root:@localhost/inventory_db
+DATABASE_URL=sqlite:///./inventory.db
 SECRET_KEY=mysecretkey123
 ```
+
+No external database setup needed — SQLite runs out of the box.
 
 ## UML Diagrams
 
