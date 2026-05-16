@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IMS — Statistics</title>
   <link rel="stylesheet" href="css/style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <style>
     .stats-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); margin-bottom: var(--space-8); }
     .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-2xl); box-shadow: var(--shadow-card); overflow: hidden; transition: all var(--transition-base); }
@@ -59,6 +59,10 @@
         <a href="add-product.html" class="navbar-link">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Product
+        </a>
+        <a href="sales.html" class="navbar-link">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Sales
         </a>
         <a href="statistics.html" class="navbar-link active">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
@@ -191,7 +195,7 @@
           <span class="panel-title">Sales Over Time</span>
         </div>
         <div class="panel-body chart-body">
-          <div class="chart-wrapper"><canvas id="salesChart"></canvas></div>
+          <div class="chart-wrapper"><div id="salesChart"></div></div>
         </div>
       </div>
       <div class="panel">
@@ -200,6 +204,37 @@
           <span class="panel-title">Low Stock Alerts</span>
         </div>
         <div class="panel-body" id="lowStock"><div class="loading-text">Loading...</div></div>
+      </div>
+    </div>
+
+    <div class="stats-two-col">
+      <div class="panel">
+        <div class="panel-header">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+          <span class="panel-title">Top Selling Products</span>
+        </div>
+        <div class="panel-body chart-body">
+          <div class="chart-wrapper"><div id="topSellingChart"></div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+          <span class="panel-title">Revenue by Product</span>
+        </div>
+        <div class="panel-body chart-body">
+          <div class="chart-wrapper"><div id="revenueDonutChart"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:var(--space-8)">
+      <div class="panel-header">
+        <svg class="icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span class="panel-title">Daily Revenue Trend</span>
+      </div>
+      <div class="panel-body chart-body">
+        <div class="chart-wrapper" style="height:320px"><div id="dailyRevenueChart"></div></div>
       </div>
     </div>
   </div>
@@ -280,106 +315,117 @@
         const res = await fetch(API + "/sales/over-time", { headers: authHeaders() });
         if (!res.ok) throw new Error("Failed");
         const data = await res.json();
-        const canvas = document.getElementById("salesChart");
-        const ctx = canvas.getContext("2d");
-        if (!data || data.length === 0) { canvas.parentElement.innerHTML = '<div class="empty-text">No sales data yet</div>'; return; }
-
+        const el = document.getElementById("salesChart");
+        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">No sales data yet</div>'; return; }
+        el.style.height = "280px";
         var isDark = document.documentElement.classList.contains("dark");
+        var green = "#10b981", indigo = "#6366f1";
         var gridColor = isDark ? "rgba(51,65,85,0.4)" : "rgba(226,232,240,0.6)";
         var textColor = isDark ? "#64748b" : "#94a3b8";
-        var green = "#10b981", indigo = "#6366f1";
+        new ApexCharts(el, {
+          series: [
+            { name: "Revenue ($)", data: data.map(d => parseFloat(d.revenue)), type: "area" },
+            { name: "Units Sold", data: data.map(d => d.units_sold), type: "line" }
+          ],
+          chart: { height: 280, background: "transparent", toolbar: { show: false }, animations: { enabled: true, easing: "easeinout", speed: 1000 } },
+          colors: [green, indigo],
+          stroke: { curve: "smooth", width: [3, 2] },
+          fill: { type: ["gradient", "none"], gradient: { shadeIntensity: 1, opacityFrom: 0.3, opacityTo: 0.0, stops: [0, 100] } },
+          dataLabels: { enabled: false },
+          markers: { size: 0, hover: { size: 6 } },
+          xaxis: { categories: data.map(d => d.date), labels: { style: { colors: textColor, fontSize: "11px" }, rotate: -30 }, axisBorder: { show: false }, axisTicks: { show: false } },
+          yaxis: [
+            { seriesName: "Revenue ($)", labels: { style: { colors: green }, formatter: v => "$" + v.toFixed(0) }, title: { text: "Revenue", style: { color: green, fontSize: "11px" } } },
+            { seriesName: "Units Sold", opposite: true, labels: { style: { colors: indigo } }, title: { text: "Units", style: { color: indigo, fontSize: "11px" } } }
+          ],
+          grid: { borderColor: gridColor, strokeDashArray: 4, padding: { left: 10, right: 10 } },
+          tooltip: { theme: isDark ? "dark" : "light", y: [{ formatter: v => "$" + v.toFixed(2) }, { formatter: v => v + " units" }] },
+          legend: { labels: { colors: textColor }, markers: { size: 6 } },
+          theme: { mode: isDark ? "dark" : "light" }
+        }).render();
+      } catch { document.getElementById("salesChart").innerHTML = '<div class="empty-text">Failed to load chart</div>'; }
+    }
 
-        new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: data.map((d) => d.date),
-            datasets: [
-              {
-                label: "Revenue ($)",
-                data: data.map((d) => d.revenue),
-                borderColor: green,
-                backgroundColor: function(ctx) {
-                  var g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 280);
-                  g.addColorStop(0, isDark ? "rgba(16,185,129,0.15)" : "rgba(16,185,129,0.15)");
-                  g.addColorStop(1, "rgba(16,185,129,0)");
-                  return g;
-                },
-                borderWidth: 3,
-                pointBackgroundColor: green,
-                pointBorderColor: isDark ? "#1e293b" : "#fff",
-                pointBorderWidth: 2.5,
-                pointRadius: 0,
-                pointHoverRadius: 7,
-                pointHoverBorderWidth: 3,
-                tension: 0.45,
-                fill: true,
-                yAxisID: "y",
-              },
-              {
-                label: "Units Sold",
-                data: data.map((d) => d.units_sold),
-                borderColor: indigo,
-                backgroundColor: function(ctx) {
-                  var g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 280);
-                  g.addColorStop(0, isDark ? "rgba(99,102,241,0.1)" : "rgba(99,102,241,0.1)");
-                  g.addColorStop(1, "rgba(99,102,241,0)");
-                  return g;
-                },
-                borderWidth: 3,
-                pointBackgroundColor: indigo,
-                pointBorderColor: isDark ? "#1e293b" : "#fff",
-                pointBorderWidth: 2.5,
-                pointRadius: 0,
-                pointHoverRadius: 7,
-                pointHoverBorderWidth: 3,
-                tension: 0.45,
-                fill: true,
-                yAxisID: "y1",
-              },
-            ],
+    async function loadTopSellingChart() {
+      try {
+        const res = await fetch(API + "/sales/best-selling", { headers: authHeaders() });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const el = document.getElementById("topSellingChart");
+        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">No sales data yet</div>'; return; }
+        el.style.height = "280px";
+        var isDark = document.documentElement.classList.contains("dark");
+        var textColor = isDark ? "#94a3b8" : "#64748b";
+        var gridColor = isDark ? "rgba(51,65,85,0.4)" : "rgba(226,232,240,0.6)";
+        new ApexCharts(el, {
+          series: [{ name: "Units Sold", data: data.map(d => d.total_sold) }],
+          chart: { type: "bar", height: 280, background: "transparent", toolbar: { show: false }, animations: { enabled: true, easing: "easeinout", speed: 800 } },
+          plotOptions: { bar: { horizontal: true, borderRadius: 6, dataLabels: { position: "top" } } },
+          dataLabels: { enabled: true, offsetX: 6, style: { fontSize: "11px", colors: [isDark ? "#e2e8f0" : "#1e293b"] } },
+          xaxis: { categories: data.map(d => d.product_name), labels: { style: { colors: textColor, fontSize: "11px" } }, axisBorder: { show: false }, axisTicks: { show: false } },
+          yaxis: { labels: { style: { colors: textColor, fontSize: "11px" } } },
+          colors: ["#6366f1"],
+          fill: { type: "gradient", gradient: { type: "horizontal", gradientToColors: ["#10b981"], stops: [0, 100] } },
+          grid: { borderColor: gridColor, strokeDashArray: 4, xaxis: { lines: { show: true } }, yaxis: { lines: { show: false } } },
+          tooltip: { theme: isDark ? "dark" : "light", y: { formatter: v => v + " units" } },
+          theme: { mode: isDark ? "dark" : "light" }
+        }).render();
+      } catch {}
+    }
+
+    async function loadRevenueByProductChart() {
+      try {
+        const res = await fetch(API + "/sales/revenue-by-product", { headers: authHeaders() });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const el = document.getElementById("revenueDonutChart");
+        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">No sales data yet</div>'; return; }
+        el.style.height = "280px";
+        var isDark = document.documentElement.classList.contains("dark");
+        var textColor = isDark ? "#94a3b8" : "#64748b";
+        new ApexCharts(el, {
+          series: data.map(d => d.total_revenue),
+          labels: data.map(d => d.product_name),
+          chart: { type: "donut", height: 280, background: "transparent", animations: { enabled: true, easing: "easeinout", speed: 1000 } },
+          colors: ["#6366f1","#10b981","#f59e0b","#ef4444","#8b5cf6","#06b6d4","#ec4899","#84cc16"],
+          plotOptions: {
+            pie: { donut: { size: "65%", labels: { show: true, total: { show: true, label: "Total", color: textColor, formatter: w => "$" + w.globals.seriesTotals.reduce((a,b) => a+b, 0).toFixed(2) } } } }
           },
-          options: {
-            responsive: true, maintainAspectRatio: false,
-            animation: { duration: 1200, easing: "easeOutQuart" },
-            interaction: { mode: "nearest", intersect: false, axis: "x" },
-            plugins: {
-              legend: {
-                labels: {
-                  color: textColor, font: { family: "Inter", size: 12 },
-                  usePointStyle: true, pointStyle: "circle", padding: 16,
-                },
-              },
-              tooltip: {
-                backgroundColor: isDark ? "#1e293b" : "#fff",
-                titleColor: isDark ? "#f1f5f9" : "#0f172a",
-                bodyColor: isDark ? "#94a3b8" : "#64748b",
-                borderColor: isDark ? "#334155" : "#e2e8f0",
-                borderWidth: 1,
-                padding: 12,
-                cornerRadius: 12,
-                boxPadding: 4,
-                titleFont: { family: "Inter", size: 13, weight: "600" },
-                bodyFont: { family: "Inter", size: 12 },
-              },
-            },
-            scales: {
-              x: {
-                ticks: { color: textColor, font: { family: "Inter", size: 11 }, maxTicksLimit: 8 },
-                grid: { color: gridColor, drawBorder: false },
-              },
-              y: {
-                ticks: { color: green, font: { family: "Inter", size: 11 } },
-                grid: { color: gridColor, drawBorder: false },
-              },
-              y1: {
-                position: "right",
-                ticks: { color: indigo, font: { family: "Inter", size: 11 } },
-                grid: { display: false },
-              },
-            },
-          },
-        });
-      } catch { document.getElementById("salesChart").parentElement.innerHTML = '<div class="empty-text">Failed to load chart</div>'; }
+          dataLabels: { enabled: false },
+          legend: { position: "bottom", labels: { colors: textColor }, fontSize: "12px" },
+          tooltip: { theme: isDark ? "dark" : "light", y: { formatter: v => "$" + v.toFixed(2) } },
+          theme: { mode: isDark ? "dark" : "light" }
+        }).render();
+      } catch {}
+    }
+
+    async function loadDailyRevenueChart() {
+      try {
+        const res = await fetch(API + "/sales/over-time", { headers: authHeaders() });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const el = document.getElementById("dailyRevenueChart");
+        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">No sales data yet</div>'; return; }
+        el.style.height = "320px";
+        var isDark = document.documentElement.classList.contains("dark");
+        var textColor = isDark ? "#64748b" : "#94a3b8";
+        var gridColor = isDark ? "rgba(51,65,85,0.4)" : "rgba(226,232,240,0.6)";
+        var bgStroke = isDark ? "#1e293b" : "#ffffff";
+        new ApexCharts(el, {
+          series: [{ name: "Revenue", data: data.map(d => parseFloat(d.revenue.toFixed(2))) }],
+          chart: { type: "area", height: 320, background: "transparent", toolbar: { show: false }, animations: { enabled: true, easing: "easeinout", speed: 1200 } },
+          colors: ["#6366f1"],
+          stroke: { curve: "smooth", width: 3 },
+          fill: { type: "gradient", gradient: { shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.0, stops: [0, 100], colorStops: [{ offset: 0, color: "#6366f1", opacity: 0.45 }, { offset: 100, color: "#6366f1", opacity: 0 }] } },
+          dataLabels: { enabled: false },
+          markers: { size: 4, colors: ["#6366f1"], strokeColors: bgStroke, strokeWidth: 2, hover: { size: 7 } },
+          xaxis: { categories: data.map(d => d.date), labels: { style: { colors: textColor, fontSize: "11px" }, rotate: -30 }, axisBorder: { show: false }, axisTicks: { show: false } },
+          yaxis: { labels: { style: { colors: textColor }, formatter: v => "$" + v.toFixed(0) } },
+          grid: { borderColor: gridColor, strokeDashArray: 4, padding: { left: 10, right: 20 } },
+          tooltip: { theme: isDark ? "dark" : "light", y: { formatter: v => "$" + v.toFixed(2) } },
+          theme: { mode: isDark ? "dark" : "light" }
+        }).render();
+      } catch {}
     }
 
     loadRevenue();
@@ -387,6 +433,9 @@
     loadWorstSelling();
     loadLowStock();
     loadChart();
+    loadTopSellingChart();
+    loadRevenueByProductChart();
+    loadDailyRevenueChart();
   </script>
 </body>
 </html>

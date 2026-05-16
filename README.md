@@ -6,7 +6,7 @@ A full-stack web application to manage product inventory with authentication, CR
 
 - **Backend:** FastAPI (Python)
 - **Database:** SQLite + SQLAlchemy
-- **Frontend:** HTML / CSS / JavaScript
+- **Frontend:** HTML / CSS / JavaScript / ApexCharts
 - **Auth:** JWT Tokens
 - **DevOps:** Docker + Docker Compose
 
@@ -15,8 +15,14 @@ A full-stack web application to manage product inventory with authentication, CR
 - User authentication (register/login) with JWT
 - Product management (add, view, edit, delete, image upload)
 - Stock tracking with low-stock alerts
-- Sales recording with automatic stock update
-- Statistics dashboard (revenue, best/worst sellers, sales over time)
+- **Sales page** — record sales and view full transaction history directly from the UI
+- Automatic stock deduction on every sale
+- **Statistics dashboard** with 4 ApexCharts visualizations:
+  - Sales Over Time (dual-axis area + line chart)
+  - Top Selling Products (horizontal gradient bar chart)
+  - Revenue by Product (donut chart)
+  - Daily Revenue Trend (smooth area chart)
+- Revenue tracking (daily / weekly / monthly)
 - REST API with Swagger documentation
 
 ## Project Structure
@@ -42,6 +48,7 @@ A full-stack web application to manage product inventory with authentication, CR
 │   ├── login.html         # Login page
 │   ├── index.html         # Dashboard
 │   ├── add-product.html   # Add / edit product
+│   ├── sales.html         # Sales recording & history
 │   └── statistics.html    # Statistics dashboard
 ├── docs/
 │   ├── use-case.png
@@ -78,12 +85,14 @@ A full-stack web application to manage product inventory with authentication, CR
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | /sales/ | Record a new sale |
+| GET | /sales/ | List all sales (history) |
 | GET | /sales/revenue?period= | Revenue (daily/weekly/monthly) |
 | GET | /sales/best-selling | Top 5 best selling products |
 | GET | /sales/worst-selling | Worst selling products |
 | GET | /sales/average-order | Average order value |
 | GET | /sales/low-stock | Products below stock threshold |
 | GET | /sales/over-time | Sales data over time (chart) |
+| GET | /sales/revenue-by-product | Revenue breakdown per product |
 
 ## Run with Docker
 

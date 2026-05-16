@@ -138,3 +138,38 @@ def get_sales_over_time(db: Session = Depends(get_db)):
         }
         for row in results
     ]
+
+
+@router.get("/")
+def get_all_sales(db: Session = Depends(get_db)):
+    sales = db.query(Sale).order_by(Sale.sold_at.desc()).limit(100).all()
+    result = []
+    for s in sales:
+        product = db.query(Product).filter(Product.id == s.product_id).first()
+        result.append({
+            "id": s.id,
+            "product_name": product.name if product else "Unknown",
+            "quantity": s.quantity,
+            "total_price": float(s.total_price),
+            "sold_at": str(s.sold_at) if s.sold_at else None
+        })
+    return result
+
+
+@router.get("/revenue-by-product")
+def get_revenue_by_product(db: Session = Depends(get_db)):
+    results = (
+        db.query(Sale.product_id, func.sum(Sale.total_price).label("total_revenue"))
+        .group_by(Sale.product_id)
+        .order_by(func.sum(Sale.total_price).desc())
+        .limit(8)
+        .all()
+    )
+    output = []
+    for product_id, total_revenue in results:
+        product = db.query(Product).filter(Product.id == product_id).first()
+        output.append({
+            "product_name": product.name if product else "Unknown",
+            "total_revenue": float(total_revenue)
+        })
+    return output
