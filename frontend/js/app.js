@@ -243,3 +243,46 @@ const Icons = {
   eye: `<svg class="icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
   zap: `<svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
 };
+
+// ---------- i18n ----------
+var TRANSLATIONS = {
+  en: {
+    nav: { products: "Products", addProduct: "Add Product", sales: "Sales", statistics: "Statistics", signOut: "Sign out" },
+    login: { title: "Welcome back", subtitle: "Sign in to your account to continue", createTitle: "Create account", createSubtitle: "Sign up to start managing your inventory", username: "Username", password: "Password", confirmPassword: "Confirm password", signIn: "Sign In", signUp: "Sign Up", noAccount: "Don't have an account?", haveAccount: "Already have an account?" },
+    dashboard: { title: "Products", newProduct: "New Product", viewAnalytics: "View Analytics", search: "Search products...", totalProducts: "Total Products", lowStockItems: "Low Stock Items", inventoryValue: "Inventory Value" },
+    sales: { pageTitle: "Sales", totalTransactions: "Total Transactions", todayRevenue: "Today's Revenue", totalRevenue: "Total Revenue", recordSale: "Record New Sale", product: "Product", quantity: "Quantity", estimatedTotal: "Estimated Total", confirmSale: "Confirm Sale", history: "Sales History", colDate: "Date & Time", colProduct: "Product", colQty: "Qty", colRevenue: "Revenue", allTime: "All time", today: "Today", dailyTotal: "Daily total", allTransactions: "All transactions" },
+    stats: { pageTitle: "Statistics", daily: "Daily Revenue", weekly: "Weekly Revenue", monthly: "Monthly Revenue", best: "Best Selling Products", worst: "Worst Selling Products", overTime: "Sales Over Time", lowStock: "Low Stock Alerts", topSelling: "Top Selling Products", byProduct: "Revenue by Product", trend: "Daily Revenue Trend", today: "Today", lastWeek: "Last 7 days", lastMonth: "Last 30 days" }
+  },
+  fr: {
+    nav: { products: "Produits", addProduct: "Ajouter", sales: "Ventes", statistics: "Statistiques", signOut: "Déconnexion" },
+    login: { title: "Bon retour", subtitle: "Connectez-vous à votre compte", createTitle: "Créer un compte", createSubtitle: "Inscrivez-vous pour gérer votre stock", username: "Identifiant", password: "Mot de passe", confirmPassword: "Confirmer le mot de passe", signIn: "Se connecter", signUp: "S'inscrire", noAccount: "Pas encore de compte ?", haveAccount: "Déjà un compte ?" },
+    dashboard: { title: "Produits", newProduct: "Nouveau produit", viewAnalytics: "Voir les stats", search: "Rechercher...", totalProducts: "Total produits", lowStockItems: "Stock faible", inventoryValue: "Valeur du stock" },
+    sales: { pageTitle: "Ventes", totalTransactions: "Transactions totales", todayRevenue: "Revenus du jour", totalRevenue: "Revenus totaux", recordSale: "Nouvelle vente", product: "Produit", quantity: "Quantité", estimatedTotal: "Total estimé", confirmSale: "Confirmer", history: "Historique des ventes", colDate: "Date & Heure", colProduct: "Produit", colQty: "Qté", colRevenue: "Revenu", allTime: "Tout le temps", today: "Aujourd'hui", dailyTotal: "Total du jour", allTransactions: "Toutes les transactions" },
+    stats: { pageTitle: "Statistiques", daily: "Revenus journaliers", weekly: "Revenus hebdomadaires", monthly: "Revenus mensuels", best: "Meilleurs produits", worst: "Moins vendus", overTime: "Ventes dans le temps", lowStock: "Alertes stock bas", topSelling: "Top des ventes", byProduct: "Revenu par produit", trend: "Tendance des revenus", today: "Aujourd'hui", lastWeek: "7 derniers jours", lastMonth: "30 derniers jours" }
+  }
+};
+
+function getLang() { return localStorage.getItem("lang") || "en"; }
+function setLang(lang) { localStorage.setItem("lang", lang); applyTranslations(); }
+function toggleLang() { setLang(getLang() === "en" ? "fr" : "en"); }
+function getLangLabel() { return getLang() === "en" ? "FR" : "EN"; }
+
+function applyTranslations() {
+  var t = TRANSLATIONS[getLang()];
+  document.querySelectorAll("[data-i18n]").forEach(function(el) {
+    var keys = el.dataset.i18n.split(".");
+    var val = t;
+    for (var i = 0; i < keys.length; i++) { val = val && val[keys[i]]; }
+    if (val !== undefined) el.textContent = val;
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach(function(el) {
+    var keys = el.dataset.i18nPh.split(".");
+    var val = t;
+    for (var i = 0; i < keys.length; i++) { val = val && val[keys[i]]; }
+    if (val !== undefined) el.placeholder = val;
+  });
+  var btn = document.getElementById("langBtn");
+  if (btn) btn.textContent = getLangLabel();
+}
+
+function initLang() { applyTranslations(); }

@@ -90,22 +90,23 @@
       <div class="navbar-links">
         <a href="index.html" class="navbar-link">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 3l7 4-7 4-7-4 7-4z"/><path d="M19 7v8l-7 4v-8l7-4z"/><path d="M5 7v8l7 4v-8l-7-4z"/></svg>
-          Products
+          <span data-i18n="nav.products">Products</span>
         </a>
         <a href="add-product.html" class="navbar-link active">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add Product
+          <span data-i18n="nav.addProduct">Add Product</span>
         </a>
         <a href="sales.html" class="navbar-link">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          Sales
+          <span data-i18n="nav.sales">Sales</span>
         </a>
         <a href="statistics.html" class="navbar-link">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
-          Statistics
+          <span data-i18n="nav.statistics">Statistics</span>
         </a>
       </div>
       <div class="navbar-right">
+        <button class="theme-toggle" id="langBtn" onclick="toggleLang()" title="Change language" style="font-size:var(--text-xs);font-weight:700;letter-spacing:0.05em">FR</button>
         <button class="theme-toggle" onclick="toggleTheme(); this.innerHTML = getThemeIcon()" title="Toggle theme">
           <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
         </button>
@@ -115,7 +116,7 @@
         </span>
         <button class="btn btn-ghost btn-sm" onclick="logout()">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Sign out
+          <span data-i18n="nav.signOut">Sign out</span>
         </button>
       </div>
     </div>
@@ -216,6 +217,7 @@
   <script>
     requireAuth();
     initTheme();
+    initLang();
     document.querySelector(".theme-toggle").innerHTML = getThemeIcon();
     document.getElementById("welcome").textContent = getWelcomeName();
 
