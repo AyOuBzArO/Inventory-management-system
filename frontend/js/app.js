@@ -122,7 +122,8 @@ function formatCurrency(amount) {
 }
 
 function formatDate(dateStr) {
-  return new Date(dateStr).toLocaleDateString("en-US", {
+  const locale = getLang() === "fr" ? "fr-FR" : "en-US";
+  return new Date(dateStr).toLocaleDateString(locale, {
     weekday: "long", year: "numeric", month: "long", day: "numeric",
   });
 }
@@ -157,10 +158,10 @@ function showConfirm(title, message) {
         <div class="modal-title">${title}</div>
         <div class="modal-text">${message}</div>
         <div class="modal-actions">
-          <button class="btn btn-secondary" id="confirm-no">Cancel</button>
+          <button class="btn btn-secondary" id="confirm-no">${TRANSLATIONS[getLang()].common.cancel}</button>
           <button class="btn btn-danger" id="confirm-yes">
             <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            Delete
+            ${TRANSLATIONS[getLang()].common.delete}
           </button>
         </div>
       </div>`;
@@ -249,21 +250,129 @@ var TRANSLATIONS = {
   en: {
     nav: { products: "Products", addProduct: "Add Product", sales: "Sales", statistics: "Statistics", signOut: "Sign out" },
     login: { title: "Welcome back", subtitle: "Sign in to your account to continue", createTitle: "Create account", createSubtitle: "Sign up to start managing your inventory", username: "Username", password: "Password", confirmPassword: "Confirm password", signIn: "Sign In", signUp: "Sign Up", noAccount: "Don't have an account?", haveAccount: "Already have an account?" },
-    dashboard: { title: "Products", newProduct: "New Product", viewAnalytics: "View Analytics", search: "Search products...", totalProducts: "Total Products", lowStockItems: "Low Stock Items", inventoryValue: "Inventory Value" },
-    sales: { pageTitle: "Sales", totalTransactions: "Total Transactions", todayRevenue: "Today's Revenue", totalRevenue: "Total Revenue", recordSale: "Record New Sale", product: "Product", quantity: "Quantity", estimatedTotal: "Estimated Total", confirmSale: "Confirm Sale", history: "Sales History", colDate: "Date & Time", colProduct: "Product", colQty: "Qty", colRevenue: "Revenue", allTime: "All time", today: "Today", dailyTotal: "Daily total", allTransactions: "All transactions" },
-    stats: { pageTitle: "Statistics", daily: "Daily Revenue", weekly: "Weekly Revenue", monthly: "Monthly Revenue", best: "Best Selling Products", worst: "Worst Selling Products", overTime: "Sales Over Time", lowStock: "Low Stock Alerts", topSelling: "Top Selling Products", byProduct: "Revenue by Product", trend: "Daily Revenue Trend", today: "Today", lastWeek: "Last 7 days", lastMonth: "Last 30 days" }
+    dashboard: {
+      title: "Products", newProduct: "New Product", viewAnalytics: "View Analytics", search: "Search products...",
+      totalProducts: "Total Products", lowStockItems: "Low Stock Items", inventoryValue: "Inventory Value",
+      greetingMorning: "Good morning", greetingAfternoon: "Good afternoon", greetingEvening: "Good evening",
+      heroText: "Here's your inventory overview for today. Monitor stock levels, track performance, and manage products effortlessly.",
+      heroTotal: "Total Products", heroLow: "Low Stock", heroValue: "Inventory Value",
+      loading: "Loading...", noProducts: "No products yet",
+      noProductsText: "Get started by adding your first product to the inventory.",
+      addProduct: "Add Product", inStock: "in stock", product: "product", products: "products",
+      edit: "Edit", delete: "Delete", noDescription: "No description",
+      serverError: "Could not load products. Is the server running?",
+      deleteConfirmTitle: "Delete product?", deleteConfirmText: "Are you sure you want to delete this product? This action cannot be undone.",
+      deletedSuccess: "Product deleted successfully", deletedError: "Failed to delete product"
+    },
+    addProduct: {
+      addTitle: "Add Product", addSubtitle: "Fill in the details below to add a new product to your inventory",
+      editTitle: "Edit Product", editSubtitle: "Update the product details below",
+      photoSection: "Product Photo", uploadClick: "Click to upload an image",
+      uploadHint: "or drag and drop — PNG, JPG up to 5MB",
+      basicInfo: "Basic Information", nameLabel: "Product Name", namePh: "e.g. Wireless Headphones",
+      descLabel: "Description", descPh: "Brief description of the product (optional)",
+      pricingSection: "Pricing & Stock", priceLabel: "Price ($)", qtyLabel: "Quantity",
+      previewLabel: "Live Preview", previewName: "Product name", previewDesc: "Description will appear here",
+      inStock: "in stock", cancel: "Cancel", save: "Save Product", update: "Update Product",
+      saving: "Saving...", updating: "Updating...", redirecting: "Redirecting...",
+      errorName: "Please enter a product name", errorPrice: "Please enter a valid price",
+      errorImage: "Please select an image file", errorSize: "Image must be less than 5MB",
+      errorSave: "Error saving product", errorConn: "Connection error. Is the server running?",
+      errorLoad: "Failed to load product"
+    },
+    sales: {
+      pageTitle: "Sales", totalTransactions: "Total Transactions", todayRevenue: "Today's Revenue",
+      totalRevenue: "Total Revenue", recordSale: "Record New Sale", product: "Product",
+      quantity: "Quantity", estimatedTotal: "Estimated Total", confirmSale: "Confirm Sale",
+      history: "Sales History", colDate: "Date & Time", colProduct: "Product", colQty: "Qty",
+      colRevenue: "Revenue", allTime: "All time", today: "Today", dailyTotal: "Daily total",
+      allTransactions: "All transactions",
+      selectProduct: "Select a product...", unitsInStock: "units currently in stock",
+      noSales: "No sales recorded yet", failedSales: "Failed to load sales history",
+      failedProducts: "Failed to load products", saleRecorded: "Sale recorded",
+      errorProduct: "Please select a product", errorQty: "Quantity must be at least 1",
+      errorStock: "Not enough stock", loading: "Loading...",
+      transaction: "transaction", transactions: "transactions", available: "available"
+    },
+    stats: {
+      pageTitle: "Statistics", daily: "Daily Revenue", weekly: "Weekly Revenue",
+      monthly: "Monthly Revenue", best: "Best Selling Products", worst: "Worst Selling Products",
+      overTime: "Sales Over Time", lowStock: "Low Stock Alerts", topSelling: "Top Selling Products",
+      byProduct: "Revenue by Product", trend: "Daily Revenue Trend",
+      today: "Today", lastWeek: "Last 7 days", lastMonth: "Last 30 days",
+      loading: "Loading...", noData: "No sales data yet", noProducts: "No products yet",
+      wellStocked: "All products are well stocked", failed: "Failed to load",
+      sold: "sold", left: "left", total: "Total"
+    },
+    common: { cancel: "Cancel", delete: "Delete", loading: "Loading..." }
   },
   fr: {
     nav: { products: "Produits", addProduct: "Ajouter", sales: "Ventes", statistics: "Statistiques", signOut: "Déconnexion" },
     login: { title: "Bon retour", subtitle: "Connectez-vous à votre compte", createTitle: "Créer un compte", createSubtitle: "Inscrivez-vous pour gérer votre stock", username: "Identifiant", password: "Mot de passe", confirmPassword: "Confirmer le mot de passe", signIn: "Se connecter", signUp: "S'inscrire", noAccount: "Pas encore de compte ?", haveAccount: "Déjà un compte ?" },
-    dashboard: { title: "Produits", newProduct: "Nouveau produit", viewAnalytics: "Voir les stats", search: "Rechercher...", totalProducts: "Total produits", lowStockItems: "Stock faible", inventoryValue: "Valeur du stock" },
-    sales: { pageTitle: "Ventes", totalTransactions: "Transactions totales", todayRevenue: "Revenus du jour", totalRevenue: "Revenus totaux", recordSale: "Nouvelle vente", product: "Produit", quantity: "Quantité", estimatedTotal: "Total estimé", confirmSale: "Confirmer", history: "Historique des ventes", colDate: "Date & Heure", colProduct: "Produit", colQty: "Qté", colRevenue: "Revenu", allTime: "Tout le temps", today: "Aujourd'hui", dailyTotal: "Total du jour", allTransactions: "Toutes les transactions" },
-    stats: { pageTitle: "Statistiques", daily: "Revenus journaliers", weekly: "Revenus hebdomadaires", monthly: "Revenus mensuels", best: "Meilleurs produits", worst: "Moins vendus", overTime: "Ventes dans le temps", lowStock: "Alertes stock bas", topSelling: "Top des ventes", byProduct: "Revenu par produit", trend: "Tendance des revenus", today: "Aujourd'hui", lastWeek: "7 derniers jours", lastMonth: "30 derniers jours" }
+    dashboard: {
+      title: "Produits", newProduct: "Nouveau produit", viewAnalytics: "Voir les stats", search: "Rechercher...",
+      totalProducts: "Total produits", lowStockItems: "Stock faible", inventoryValue: "Valeur du stock",
+      greetingMorning: "Bonjour", greetingAfternoon: "Bon après-midi", greetingEvening: "Bonsoir",
+      heroText: "Voici l'aperçu de votre inventaire. Surveillez les niveaux de stock, suivez les performances et gérez vos produits facilement.",
+      heroTotal: "Total produits", heroLow: "Stock faible", heroValue: "Valeur du stock",
+      loading: "Chargement...", noProducts: "Aucun produit",
+      noProductsText: "Commencez par ajouter votre premier produit à l'inventaire.",
+      addProduct: "Ajouter", inStock: "en stock", product: "produit", products: "produits",
+      edit: "Modifier", delete: "Supprimer", noDescription: "Aucune description",
+      serverError: "Impossible de charger les produits. Le serveur est-il actif ?",
+      deleteConfirmTitle: "Supprimer le produit ?", deleteConfirmText: "Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.",
+      deletedSuccess: "Produit supprimé avec succès", deletedError: "Échec de la suppression"
+    },
+    addProduct: {
+      addTitle: "Ajouter un produit", addSubtitle: "Remplissez les détails ci-dessous pour ajouter un nouveau produit",
+      editTitle: "Modifier le produit", editSubtitle: "Mettez à jour les détails du produit ci-dessous",
+      photoSection: "Photo du produit", uploadClick: "Cliquez pour télécharger une image",
+      uploadHint: "ou glissez-déposez — PNG, JPG jusqu'à 5 Mo",
+      basicInfo: "Informations de base", nameLabel: "Nom du produit", namePh: "ex. Casque sans fil",
+      descLabel: "Description", descPh: "Brève description du produit (facultatif)",
+      pricingSection: "Prix & Stock", priceLabel: "Prix ($)", qtyLabel: "Quantité",
+      previewLabel: "Aperçu en direct", previewName: "Nom du produit", previewDesc: "La description apparaîtra ici",
+      inStock: "en stock", cancel: "Annuler", save: "Enregistrer", update: "Mettre à jour",
+      saving: "Enregistrement...", updating: "Mise à jour...", redirecting: "Redirection...",
+      errorName: "Veuillez entrer un nom de produit", errorPrice: "Veuillez entrer un prix valide",
+      errorImage: "Veuillez sélectionner une image", errorSize: "L'image doit faire moins de 5 Mo",
+      errorSave: "Erreur lors de l'enregistrement", errorConn: "Erreur de connexion. Le serveur est-il actif ?",
+      errorLoad: "Impossible de charger le produit"
+    },
+    sales: {
+      pageTitle: "Ventes", totalTransactions: "Transactions totales", todayRevenue: "Revenus du jour",
+      totalRevenue: "Revenus totaux", recordSale: "Nouvelle vente", product: "Produit",
+      quantity: "Quantité", estimatedTotal: "Total estimé", confirmSale: "Confirmer",
+      history: "Historique des ventes", colDate: "Date & Heure", colProduct: "Produit",
+      colQty: "Qté", colRevenue: "Revenu", allTime: "Tout le temps", today: "Aujourd'hui",
+      dailyTotal: "Total du jour", allTransactions: "Toutes les transactions",
+      selectProduct: "Sélectionner un produit...", unitsInStock: "unités en stock",
+      noSales: "Aucune vente enregistrée", failedSales: "Impossible de charger l'historique",
+      failedProducts: "Impossible de charger les produits", saleRecorded: "Vente enregistrée",
+      errorProduct: "Veuillez sélectionner un produit", errorQty: "La quantité doit être au moins 1",
+      errorStock: "Stock insuffisant", loading: "Chargement...",
+      transaction: "transaction", transactions: "transactions", available: "disponibles"
+    },
+    stats: {
+      pageTitle: "Statistiques", daily: "Revenus journaliers", weekly: "Revenus hebdomadaires",
+      monthly: "Revenus mensuels", best: "Meilleurs produits", worst: "Moins vendus",
+      overTime: "Ventes dans le temps", lowStock: "Alertes stock bas", topSelling: "Top des ventes",
+      byProduct: "Revenu par produit", trend: "Tendance des revenus",
+      today: "Aujourd'hui", lastWeek: "7 derniers jours", lastMonth: "30 derniers jours",
+      loading: "Chargement...", noData: "Aucune donnée de vente", noProducts: "Aucun produit",
+      wellStocked: "Tous les produits sont bien approvisionnés", failed: "Échec du chargement",
+      sold: "vendu(s)", left: "restant(s)", total: "Total"
+    },
+    common: { cancel: "Annuler", delete: "Supprimer", loading: "Chargement..." }
   }
 };
 
 function getLang() { return localStorage.getItem("lang") || "en"; }
-function setLang(lang) { localStorage.setItem("lang", lang); applyTranslations(); }
+function setLang(lang) {
+  localStorage.setItem("lang", lang);
+  applyTranslations();
+  if (typeof window.onLangChange === "function") window.onLangChange();
+}
 function toggleLang() { setLang(getLang() === "en" ? "fr" : "en"); }
 function getLangLabel() { return getLang() === "en" ? "FR" : "EN"; }
 

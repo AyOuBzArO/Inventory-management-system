@@ -149,12 +149,12 @@
           <div class="icon-box icon-box-primary">
             <svg class="icon" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           </div>
-          <span class="stat-card-badge up"><svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span>All time</span></span>
+          <span class="stat-card-badge up"><svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span data-i18n="sales.allTime">All time</span></span>
         </div>
         <div class="stat-card-value" id="statTotalSales">—</div>
         <div class="stat-card-label" data-i18n="sales.totalTransactions">Total Transactions</div>
         <div class="stat-card-footer">
-          <span class="stat-card-trend up"><svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span>All time</span></span>
+          <span class="stat-card-trend up"><svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span data-i18n="sales.allTime">All time</span></span>
           <svg class="stat-card-sparkline" viewBox="0 0 100 24"><path d="M0,20 Q15,18 25,16 T50,10 T70,7 T85,9 T100,4" stroke="var(--primary-500)"/></svg>
         </div>
         <div class="stat-card-progress"><div class="stat-card-progress-bar" id="progressTotalSales" style="width:0%"></div></div>
@@ -166,12 +166,12 @@
           <div class="icon-box icon-box-warning">
             <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
           </div>
-          <span class="stat-card-badge up"><svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span>Today</span></span>
+          <span class="stat-card-badge up"><svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span data-i18n="sales.today">Today</span></span>
         </div>
         <div class="stat-card-value" id="statTodayRevenue">—</div>
         <div class="stat-card-label" data-i18n="sales.todayRevenue">Today's Revenue</div>
         <div class="stat-card-footer">
-          <span class="stat-card-trend up"><svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span>Daily total</span></span>
+          <span class="stat-card-trend up"><svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span data-i18n="sales.dailyTotal">Daily total</span></span>
           <svg class="stat-card-sparkline" viewBox="0 0 100 24"><path d="M0,18 Q15,20 25,16 T50,10 T70,8 T85,12 T100,4" stroke="var(--warning)"/></svg>
         </div>
         <div class="stat-card-progress"><div class="stat-card-progress-bar" id="progressTodayRevenue" style="width:0%"></div></div>
@@ -183,12 +183,12 @@
           <div class="icon-box icon-box-danger">
             <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           </div>
-          <span class="stat-card-badge up"><svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span>All time</span></span>
+          <span class="stat-card-badge up"><svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span data-i18n="sales.allTime">All time</span></span>
         </div>
         <div class="stat-card-value" id="statTotalRevenue">—</div>
         <div class="stat-card-label" data-i18n="sales.totalRevenue">Total Revenue</div>
         <div class="stat-card-footer">
-          <span class="stat-card-trend up"><svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span>All transactions</span></span>
+          <span class="stat-card-trend up"><svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg><span data-i18n="sales.allTransactions">All transactions</span></span>
           <svg class="stat-card-sparkline" viewBox="0 0 100 24"><path d="M0,20 Q10,18 20,19 T40,12 T60,8 T80,10 T100,4" stroke="var(--primary-500)"/></svg>
         </div>
         <div class="stat-card-progress"><div class="stat-card-progress-bar" id="progressTotalRevenue" style="width:0%"></div></div>
@@ -265,18 +265,19 @@
         if (!res.ok) throw new Error();
         allProducts = await res.json();
         const sel = document.getElementById("productSelect");
-        sel.innerHTML = '<option value="">Select a product...</option>';
+        const st = TRANSLATIONS[getLang()].sales;
+        sel.innerHTML = '<option value="">' + st.selectProduct + '</option>';
         allProducts.forEach(p => {
           const opt = document.createElement("option");
           opt.value = p.id;
           opt.dataset.price = p.price;
           opt.dataset.stock = p.quantity;
-          opt.textContent = p.name + " — $" + Number(p.price).toFixed(2) + " (" + p.quantity + " in stock)";
+          opt.textContent = p.name + " — $" + Number(p.price).toFixed(2) + " (" + p.quantity + " " + st.unitsInStock + ")";
           if (p.quantity === 0) opt.disabled = true;
           sel.appendChild(opt);
         });
       } catch {
-        showToast("Failed to load products", "error");
+        showToast(TRANSLATIONS[getLang()].sales.failedProducts, "error");
       }
     }
 
@@ -289,7 +290,7 @@
         const price = parseFloat(selected.dataset.price) || 0;
         const stock = parseInt(selected.dataset.stock) || 0;
         document.getElementById("pricePreview").textContent = "$" + (price * qty).toFixed(2);
-        hint.textContent = stock + " units currently in stock";
+        hint.textContent = stock + " " + TRANSLATIONS[getLang()].sales.unitsInStock;
         hint.style.color = stock < 5 ? "var(--danger)" : "var(--text-tertiary)";
       } else {
         document.getElementById("pricePreview").textContent = "$0.00";
@@ -307,11 +308,12 @@
       const productId = document.getElementById("productSelect").value;
       const qty = parseInt(document.getElementById("qtyInput").value);
       const btn = document.getElementById("saleBtn");
-      if (!productId) { showToast("Please select a product", "error"); return; }
-      if (!qty || qty < 1) { showToast("Quantity must be at least 1", "error"); return; }
+      const st = TRANSLATIONS[getLang()].sales;
+      if (!productId) { showToast(st.errorProduct, "error"); return; }
+      if (!qty || qty < 1) { showToast(st.errorQty, "error"); return; }
       const sel = document.getElementById("productSelect");
       const stock = parseInt(sel.options[sel.selectedIndex].dataset.stock) || 0;
-      if (qty > stock) { showToast("Not enough stock (" + stock + " available)", "error"); return; }
+      if (qty > stock) { showToast(st.errorStock + " (" + stock + " " + st.available + ")", "error"); return; }
 
       btn.disabled = true;
       btn.classList.add("loading");
@@ -326,7 +328,7 @@
           throw new Error(err.detail || "Sale failed");
         }
         const data = await res.json();
-        showToast("Sale recorded — $" + data.total_price.toFixed(2), "success");
+        showToast(TRANSLATIONS[getLang()].sales.saleRecorded + " — $" + data.total_price.toFixed(2), "success");
         document.getElementById("productSelect").value = "";
         document.getElementById("qtyInput").value = 1;
         document.getElementById("pricePreview").textContent = "$0.00";
@@ -348,9 +350,10 @@
         const res = await fetch(API + "/sales/", { headers: authHeaders() });
         if (!res.ok) throw new Error();
         const sales = await res.json();
-        document.getElementById("salesCount").textContent = sales.length + " transaction" + (sales.length !== 1 ? "s" : "");
+        const st = TRANSLATIONS[getLang()].sales;
+        document.getElementById("salesCount").textContent = sales.length + " " + (sales.length !== 1 ? st.transactions : st.transaction);
         if (sales.length === 0) {
-          container.innerHTML = '<div class="empty-text">No sales recorded yet</div>';
+          container.innerHTML = '<div class="empty-text">' + st.noSales + '</div>';
           return;
         }
         var t = TRANSLATIONS[getLang()].sales;
@@ -367,7 +370,7 @@
             </tr>`).join("")}
           </tbody></table>`;
       } catch {
-        container.innerHTML = '<div class="empty-text">Failed to load sales history</div>';
+        container.innerHTML = '<div class="empty-text">' + TRANSLATIONS[getLang()].sales.failedSales + '</div>';
       }
     }
 
@@ -396,11 +399,14 @@
     function formatSaleDate(dateStr) {
       if (!dateStr) return "—";
       try {
+        const locale = getLang() === "fr" ? "fr-FR" : "en-US";
         const d = new Date(dateStr);
-        return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " " +
-               d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+        return d.toLocaleDateString(locale, { month: "short", day: "numeric" }) + " " +
+               d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
       } catch { return dateStr; }
     }
+
+    window.onLangChange = function() { loadProducts(); loadSalesHistory(); };
 
     loadProducts();
     loadSalesHistory();

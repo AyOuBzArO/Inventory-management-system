@@ -112,7 +112,7 @@
         <div class="stat-card-footer">
           <span class="stat-card-trend up" id="trendDaily">
             <svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
-            <span>Today</span>
+            <span data-i18n="stats.today">Today</span>
           </span>
           <svg class="stat-card-sparkline" viewBox="0 0 100 24">
             <path d="M0,18 Q15,20 25,16 T50,10 T70,8 T85,12 T100,4" stroke="var(--primary-500)"/>
@@ -137,7 +137,7 @@
         <div class="stat-card-footer">
           <span class="stat-card-trend up" id="trendWeekly">
             <svg class="icon" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
-            <span>Last 7 days</span>
+            <span data-i18n="stats.lastWeek">Last 7 days</span>
           </span>
           <svg class="stat-card-sparkline" viewBox="0 0 100 24">
             <path d="M0,20 Q15,18 25,19 T50,12 T70,8 T85,10 T100,6" stroke="var(--warning)"/>
@@ -162,7 +162,7 @@
         <div class="stat-card-footer">
           <span class="stat-card-trend down" id="trendMonthly">
             <svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-            <span>Last 30 days</span>
+            <span data-i18n="stats.lastMonth">Last 30 days</span>
           </span>
           <svg class="stat-card-sparkline" viewBox="0 0 100 24">
             <path d="M0,4 Q15,6 25,5 T50,10 T70,14 T85,16 T100,18" stroke="var(--danger)"/>
@@ -271,14 +271,15 @@
         if (!res.ok) throw new Error("Failed");
         const data = await res.json();
         const el = document.getElementById("bestSelling");
-        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">No sales data yet</div>'; return; }
+        const st = TRANSLATIONS[getLang()].stats;
+        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">' + st.noData + '</div>'; return; }
         el.innerHTML = '<div class="rank-list">' + data.map((p, i) => `
           <div class="rank-item" style="animation-delay:${i * 0.05}s">
             <span class="rank-number">#${i + 1}</span>
             <span class="rank-name">${p.product_name}</span>
-            <span class="rank-units green">${p.total_sold} sold</span>
+            <span class="rank-units green">${p.total_sold} ${st.sold}</span>
           </div>`).join("") + '</div>';
-      } catch { document.getElementById("bestSelling").innerHTML = '<div class="empty-text">Failed to load</div>'; }
+      } catch { document.getElementById("bestSelling").innerHTML = '<div class="empty-text">' + TRANSLATIONS[getLang()].stats.failed + '</div>'; }
     }
 
     async function loadWorstSelling() {
@@ -287,14 +288,15 @@
         if (!res.ok) throw new Error("Failed");
         const data = await res.json();
         const el = document.getElementById("worstSelling");
-        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">No products yet</div>'; return; }
+        const st = TRANSLATIONS[getLang()].stats;
+        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">' + st.noProducts + '</div>'; return; }
         el.innerHTML = '<div class="rank-list">' + data.map((p, i) => `
           <div class="rank-item" style="animation-delay:${i * 0.05}s">
             <span class="rank-number">#${i + 1}</span>
             <span class="rank-name">${p.product_name}</span>
-            <span class="rank-units red">${p.total_sold} sold</span>
+            <span class="rank-units red">${p.total_sold} ${st.sold}</span>
           </div>`).join("") + '</div>';
-      } catch { document.getElementById("worstSelling").innerHTML = '<div class="empty-text">Failed to load</div>'; }
+      } catch { document.getElementById("worstSelling").innerHTML = '<div class="empty-text">' + TRANSLATIONS[getLang()].stats.failed + '</div>'; }
     }
 
     async function loadLowStock() {
@@ -303,13 +305,14 @@
         if (!res.ok) throw new Error("Failed");
         const data = await res.json();
         const el = document.getElementById("lowStock");
-        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">All products are well stocked</div>'; return; }
+        const st = TRANSLATIONS[getLang()].stats;
+        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">' + st.wellStocked + '</div>'; return; }
         el.innerHTML = '<div class="stock-list">' + data.map((p, i) => `
           <div class="stock-item" style="animation-delay:${i * 0.05}s">
             <span class="stock-name">${p.product_name}</span>
-            <span class="stock-badge ${p.quantity <= 5 ? "critical" : "warning"}">${p.quantity} left</span>
+            <span class="stock-badge ${p.quantity <= 5 ? "critical" : "warning"}">${p.quantity} ${st.left}</span>
           </div>`).join("") + '</div>';
-      } catch { document.getElementById("lowStock").innerHTML = '<div class="empty-text">Failed to load</div>'; }
+      } catch { document.getElementById("lowStock").innerHTML = '<div class="empty-text">' + TRANSLATIONS[getLang()].stats.failed + '</div>'; }
     }
 
     async function loadChart() {
@@ -318,7 +321,7 @@
         if (!res.ok) throw new Error("Failed");
         const data = await res.json();
         const el = document.getElementById("salesChart");
-        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">No sales data yet</div>'; return; }
+        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">' + TRANSLATIONS[getLang()].stats.noData + '</div>'; return; }
         el.style.height = "280px";
         var isDark = document.documentElement.classList.contains("dark");
         var green = "#10b981", indigo = "#6366f1";
@@ -354,7 +357,7 @@
         if (!res.ok) throw new Error();
         const data = await res.json();
         const el = document.getElementById("topSellingChart");
-        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">No sales data yet</div>'; return; }
+        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">' + TRANSLATIONS[getLang()].stats.noData + '</div>'; return; }
         el.style.height = "280px";
         var isDark = document.documentElement.classList.contains("dark");
         var textColor = isDark ? "#94a3b8" : "#64748b";
@@ -381,7 +384,7 @@
         if (!res.ok) throw new Error();
         const data = await res.json();
         const el = document.getElementById("revenueDonutChart");
-        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">No sales data yet</div>'; return; }
+        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">' + TRANSLATIONS[getLang()].stats.noData + '</div>'; return; }
         el.style.height = "280px";
         var isDark = document.documentElement.classList.contains("dark");
         var textColor = isDark ? "#94a3b8" : "#64748b";
@@ -407,7 +410,7 @@
         if (!res.ok) throw new Error();
         const data = await res.json();
         const el = document.getElementById("dailyRevenueChart");
-        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">No sales data yet</div>'; return; }
+        if (!data || data.length === 0) { el.innerHTML = '<div class="empty-text">' + TRANSLATIONS[getLang()].stats.noData + '</div>'; return; }
         el.style.height = "320px";
         var isDark = document.documentElement.classList.contains("dark");
         var textColor = isDark ? "#64748b" : "#94a3b8";
@@ -429,6 +432,8 @@
         }).render();
       } catch {}
     }
+
+    window.onLangChange = function() { loadBestSelling(); loadWorstSelling(); loadLowStock(); };
 
     loadRevenue();
     loadBestSelling();
