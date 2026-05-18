@@ -1,6 +1,6 @@
 # Inventory Management System
 
-A full-stack web application to manage product inventory with authentication, CRUD operations, stock tracking, sales recording, and a statistics dashboard.
+A full-stack web application to manage product inventory with authentication, CRUD operations, stock tracking, sales recording, a statistics dashboard, and bilingual UI support.
 
 ## Tech Stack
 
@@ -8,6 +8,7 @@ A full-stack web application to manage product inventory with authentication, CR
 - **Database:** SQLite + SQLAlchemy
 - **Frontend:** HTML / CSS / JavaScript / ApexCharts
 - **Auth:** JWT Tokens
+- **i18n:** Built-in English / French language toggle (localStorage)
 - **DevOps:** Docker + Docker Compose
 
 ## Features
@@ -23,6 +24,7 @@ A full-stack web application to manage product inventory with authentication, CR
   - Revenue by Product (donut chart)
   - Daily Revenue Trend (smooth area chart)
 - Revenue tracking (daily / weekly / monthly)
+- **Language toggle** — switch between English and French on every page; preference saved in localStorage
 - REST API with Swagger documentation
 
 ## Project Structure
@@ -49,7 +51,9 @@ A full-stack web application to manage product inventory with authentication, CR
 │   ├── index.html         # Dashboard
 │   ├── add-product.html   # Add / edit product
 │   ├── sales.html         # Sales recording & history
-│   └── statistics.html    # Statistics dashboard
+│   ├── statistics.html    # Statistics dashboard
+│   └── js/
+│       └── app.js         # Shared JS: auth, theme, i18n engine (EN/FR)
 ├── docs/
 │   ├── use-case.png
 │   ├── class-diagram.png
