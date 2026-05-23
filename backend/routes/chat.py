@@ -221,5 +221,10 @@ def chat(
         return {"reply": reply}
     except httpx.TimeoutException:
         raise HTTPException(status_code=504, detail="AI model timed out. Try again.")
+    except httpx.ConnectError:
+        raise HTTPException(
+            status_code=503,
+            detail="Ollama is not running. Start it locally with: ollama serve"
+        )
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"AI unavailable: {str(e)}")
