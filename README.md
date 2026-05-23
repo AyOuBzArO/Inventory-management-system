@@ -18,7 +18,7 @@ A modern, full-stack inventory management application with AI-powered analytics.
 
 ## Demo Video
 
-> To embed your video: drag the `.mp4` into any GitHub Issue comment box — GitHub hosts it and returns a URL. Replace this line with that URL.
+<img width="1920" height="1008" alt="Image" src="https://github.com/user-attachments/assets/e2c72439-1036-4169-bb06-6a4bb02c1de2" />
 
 ---
 
