@@ -18,7 +18,7 @@ A modern, full-stack inventory management application with AI-powered analytics.
 
 ## Demo Video
 
-https://github.com/user-attachments/assets/7ae64caa-73eb-4b53-9449-57392ba0e200
+[https://github.com/user-attachments/assets/7ae64caa-73eb-4b53-9449-57392ba0e200](https://github.com/user-attachments/assets/535e5581-aa07-4641-934f-d7fe4aab9fe4)
 
 ---
 
