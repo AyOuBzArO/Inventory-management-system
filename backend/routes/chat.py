@@ -11,11 +11,15 @@ from backend.database import get_db
 from backend.models.sale import Sale
 from backend.models.product import Product
 from backend.auth import get_current_user
+from backend.config import GROQ_API_KEY
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
 OLLAMA_URL   = "http://localhost:11434/api/chat"
 OLLAMA_MODEL = "qwen2.5:7b"
+
+GROQ_URL   = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = "llama-3.1-8b-instant"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Schemas
@@ -209,6 +213,7 @@ def chat(
     # Append the new user message
     messages.append({"role": "user", "content": body.message})
 
+    # ── Try Ollama first (local) ──────────────────────────────────────────
     try:
         resp = httpx.post(
             OLLAMA_URL,
@@ -216,15 +221,45 @@ def chat(
             timeout=120.0,
         )
         resp.raise_for_status()
-        data = resp.json()
-        reply = data["message"]["content"].strip()
-        return {"reply": reply}
+        reply = resp.json()["message"]["content"].strip()
+        return {"reply": reply, "provider": "ollama"}
+
     except httpx.TimeoutException:
         raise HTTPException(status_code=504, detail="AI model timed out. Try again.")
+
     except httpx.ConnectError:
-        raise HTTPException(
-            status_code=503,
-            detail="Ollama is not running. Start it locally with: ollama serve"
+        # Ollama not available — fall back to Groq if API key is configured
+        if not GROQ_API_KEY:
+            raise HTTPException(
+                status_code=503,
+                detail="Ollama is not running. Start it locally with: ollama serve"
+            )
+
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"AI unavailable: {str(e)}")
+
+    # ── Groq fallback (cloud, free tier) ─────────────────────────────────
+    # Re-format messages for OpenAI-compatible API (same structure)
+    try:
+        resp = httpx.post(
+            GROQ_URL,
+            headers={
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": GROQ_MODEL,
+                "messages": messages,
+                "max_tokens": 512,
+                "temperature": 0.4,
+            },
+            timeout=30.0,
         )
+        resp.raise_for_status()
+        reply = resp.json()["choices"][0]["message"]["content"].strip()
+        return {"reply": reply, "provider": "groq"}
+
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="AI model timed out. Try again.")
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"AI unavailable: {str(e)}")
