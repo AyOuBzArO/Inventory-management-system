@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from backend.database import engine, Base
 from backend.models import user, product, sale
-from backend.routes import auth, products, sales
+from backend.routes import auth, products, sales, chat
 import os
 
 Base.metadata.create_all(bind=engine)
@@ -25,6 +25,7 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 app.include_router(auth.router)
 app.include_router(products.router)
 app.include_router(sales.router)
+app.include_router(chat.router)
 
 @app.get("/health")
 def health_check():
