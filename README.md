@@ -1,156 +1,230 @@
-# Inventory Management System
+<div align="center">
 
-A full-stack web application to manage product inventory with authentication, CRUD operations, stock tracking, sales recording, a statistics dashboard, and bilingual UI support.
+<img src="frontend/logo.png" width="80" alt="IMS Logo" />
 
-## Tech Stack
+# IMS — Inventory Management System
 
-- **Backend:** FastAPI (Python)
-- **Database:** SQLite + SQLAlchemy
-- **Frontend:** HTML / CSS / JavaScript / ApexCharts
-- **Auth:** JWT Tokens
-- **i18n:** Built-in English / French language toggle (localStorage)
-- **DevOps:** Docker + Docker Compose
+**A modern, full-stack inventory management application with AI-powered analytics.**
 
-## Features
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Railway-6366f1?style=for-the-badge&logo=railway)](https://inventory-management-system-production-3b31.up.railway.app/app/login.html)
+[![Docker](https://img.shields.io/badge/Docker-Hub-2496ED?style=for-the-badge&logo=docker)](https://hub.docker.com/r/ayoubzaro/inventory-management-system)
+[![GitHub](https://img.shields.io/badge/GitHub-Repo-181717?style=for-the-badge&logo=github)](https://github.com/AyOuBzArO/Inventory-management-system)
+![Python](https://img.shields.io/badge/Python-3.13-3776AB?style=for-the-badge&logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=for-the-badge&logo=fastapi)
 
-- User authentication (register/login) with JWT
-- Product management (add, view, edit, delete, image upload)
-- Stock tracking with low-stock alerts
-- **Sales page** — record sales and view full transaction history directly from the UI
-- Automatic stock deduction on every sale
-- **Statistics dashboard** with 4 ApexCharts visualizations:
-  - Sales Over Time (dual-axis area + line chart)
-  - Top Selling Products (horizontal gradient bar chart)
-  - Revenue by Product (donut chart)
-  - Daily Revenue Trend (smooth area chart)
-- Revenue tracking (daily / weekly / monthly)
-- **Language toggle** — switch between English and French on every page; preference saved in localStorage
-- REST API with Swagger documentation
+</div>
 
-## Project Structure
+---
+
+## 📺 Demo Video
+
+> To add your video: drag the `.mp4` file into any GitHub Issue comment box — GitHub will host it and give you a URL like `https://github.com/user-attachments/assets/xxx.mp4`. Paste it below.
+
+<!-- Replace this line with your video URL once uploaded -->
+
+---
+
+## ✨ Features
+
+### 🏠 Smart Dashboard
+Personalized greeting with time-of-day awareness, real-time KPI cards (total products, low-stock alerts, inventory value), mini sparkline charts, and quick-action buttons — all in one view.
+
+### 📦 Product Management
+Full CRUD operations with drag-and-drop image upload, a **live preview card** that updates as you type, instant stock level updates, and a product search bar.
+
+### 🛒 Sales Tracking
+Record sales in seconds, track total transactions, today's revenue, and all-time revenue. Full sales history table with date, product, quantity, and revenue columns.
+
+### 📊 Statistics & Charts
+- Daily / Weekly / Monthly revenue cards with percentage trend indicators
+- Best & worst selling product rankings
+- Interactive **bar chart** — top selling products by units sold
+- Interactive **donut chart** — revenue breakdown by product
+- **Daily revenue trend** line chart
+
+### 🤖 AI Analytics Assistant
+An intelligent chat assistant embedded on every authenticated page, powered by **Ollama locally** with automatic **Groq cloud fallback** when deployed:
+- Reads **live database context** on every message: inventory levels, revenue, sales trends, low-stock alerts
+- Answers natural-language questions: *"What's my best-selling product?"*, *"Which items are low on stock?"*, *"Give me a business summary"*
+- Proactive business insights and restocking recommendations
+- 6 quick-suggestion chips with inline SVG icons
+- Persistent conversation history, animated typing indicator, markdown rendering (bold, bullet lists)
+- Smart provider selection: **Ollama** (local, free, offline) → **Groq** (cloud, free tier, auto-fallback)
+
+### 🌍 Bilingual Interface (EN / FR)
+Full English ↔ French toggle on every page, persisted in `localStorage`. Every label, title, button, table header, form field, and dynamic content string is translated.
+
+### 🎨 Light / Dark Theme
+One-click theme toggle persisted across sessions and all page navigations.
+
+### 🔐 Authentication & Security
+- JWT-based authentication with 60-minute token expiry
+- Passwords hashed with **bcrypt** — plain-text passwords are never stored
+- Every API route is protected — requests without a valid token are rejected
+- `SECRET_KEY` and API keys managed via environment variables, never hardcoded
+
+### 🗄️ Persistent Database
+- **PostgreSQL** on Railway (production) — data survives restarts and redeploys
+- **SQLite** locally — zero-config for development
+- Automatic URL adapter handles Railway's `postgres://` → `postgresql://` format
+
+### 🐳 Docker Ready
+Single command to run anywhere. Image published to Docker Hub.
+
+---
+
+## 📸 Screenshots
+
+### Login
+![Login](docs/screenshots/login.png)
+
+### Dashboard
+![Dashboard](docs/screenshots/dashboard.png)
+
+### Products
+![Products](docs/screenshots/products.png)
+
+### Add Product — with Live Preview
+![Add Product](docs/screenshots/add-product.png)
+
+### Sales
+![Sales](docs/screenshots/sales.png)
+
+### Statistics
+![Statistics](docs/screenshots/statistics.png)
+
+### Charts — Top Selling & Revenue by Product
+![Charts](docs/screenshots/charts.png)
+
+### AI Assistant — Welcome & Quick Suggestions
+![AI Assistant](docs/screenshots/ai-assistant.png)
+
+### AI Assistant — Business Summary Response
+![AI Response](docs/screenshots/ai-response.png)
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Backend** | FastAPI · Python 3.13 · Uvicorn |
+| **Database** | SQLAlchemy ORM · PostgreSQL (prod) · SQLite (dev) |
+| **Auth** | JWT (python-jose) · bcrypt password hashing |
+| **AI — Local** | Ollama · qwen2.5:7b |
+| **AI — Cloud** | Groq API · llama-3.1-8b-instant (free tier) |
+| **Frontend** | Vanilla HTML5 · CSS3 · JavaScript (no framework) |
+| **Charts** | ApexCharts (CDN) |
+| **i18n** | Custom EN/FR engine · localStorage persistence |
+| **Deployment** | Railway · Docker · Docker Hub |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.10+
+- [Ollama](https://ollama.com) *(optional — only needed for local AI)*
+
+### Run Locally
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/AyOuBzArO/Inventory-management-system.git
+cd Inventory-management-system
+
+# 2. Create virtual environment
+python -m venv venv
+venv\Scripts\activate        # Windows
+source venv/bin/activate     # macOS / Linux
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Start the server
+uvicorn backend.main:app --reload --port 8080
+
+# 5. Open in browser → http://localhost:8080
+```
+
+### Enable Local AI Assistant
+```bash
+ollama pull qwen2.5:7b
+ollama serve
+```
+
+### Run with Docker
+```bash
+docker pull ayoubzaro/inventory-management-system:latest
+docker run -p 8080:8080 ayoubzaro/inventory-management-system:latest
+```
+
+---
+
+## ☁️ Deploy on Railway
+
+1. Fork this repository
+2. Create a new Railway project → **Deploy from GitHub repo**
+3. Add a **PostgreSQL** database service — Railway automatically injects `DATABASE_URL`
+4. Set these environment variables on your app service:
+
+| Variable | Description |
+|---|---|
+| `SECRET_KEY` | Any long random string — used to sign JWT tokens |
+| `GROQ_API_KEY` | Free key from [console.groq.com](https://console.groq.com) — enables AI on cloud |
+
+5. Railway redeploys automatically on every `git push` ✅
+
+---
+
+## 📁 Project Structure
 
 ```
+Inventory-management-system/
 ├── backend/
-│   ├── models/
-│   │   ├── user.py        # User model
-│   │   ├── product.py     # Product model
-│   │   └── sale.py        # Sale model
-│   ├── routes/
-│   │   ├── auth.py        # Auth endpoints
-│   │   ├── products.py    # Product endpoints
-│   │   └── sales.py       # Sales & statistics endpoints
-│   ├── schemas/
-│   │   ├── user.py        # User schemas
-│   │   └── sale.py        # Sale schemas
-│   ├── auth.py            # JWT authentication
-│   ├── config.py          # Environment config
-│   ├── database.py        # DB connection
-│   └── main.py            # App entry point
+│   ├── models/           # SQLAlchemy models: User, Product, Sale
+│   ├── routes/           # API routers: auth, products, sales, chat
+│   ├── schemas/          # Pydantic request/response schemas
+│   ├── auth.py           # JWT creation + bcrypt helpers
+│   ├── config.py         # Environment variable loading
+│   ├── database.py       # Engine, session, Base
+│   └── main.py           # FastAPI app + router registration
 ├── frontend/
-│   ├── login.html         # Login page
-│   ├── index.html         # Dashboard
-│   ├── add-product.html   # Add / edit product
-│   ├── sales.html         # Sales recording & history
-│   ├── statistics.html    # Statistics dashboard
-│   └── js/
-│       └── app.js         # Shared JS: auth, theme, i18n engine (EN/FR)
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   ├── app.js        # Theme toggle, EN/FR i18n engine, shared utils
+│   │   └── chat.js       # AI chat widget (fully self-contained)
+│   ├── index.html        # Dashboard
+│   ├── sales.html        # Sales page
+│   ├── statistics.html   # Statistics & charts
+│   ├── add-product.html  # Add / edit product
+│   ├── login.html        # Authentication
+│   ├── logo.png          # App logo
+│   └── ai-avatar.png     # AI assistant avatar
 ├── docs/
-│   ├── use-case.png
-│   ├── class-diagram.png
-│   └── sequence-diagram.png
-├── uploads/               # Product images
-├── docker-compose.yml
-├── dockerfile
+│   └── screenshots/      # README screenshots
+├── Dockerfile
 ├── requirements.txt
 └── README.md
 ```
 
-## API Endpoints
+---
 
-### Authentication
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /register | Register new user |
-| POST | /login | Login and get JWT token |
+## 🔒 Security
 
-### Products
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /products | Create product |
-| GET | /products | List all products |
-| GET | /products/{id} | Get product by id |
-| PUT | /products/{id} | Update product |
-| DELETE | /products/{id} | Delete product |
-| PATCH | /products/{id}/quantity | Update stock quantity |
-| GET | /products/stats/summary | Inventory summary stats |
-| POST | /products/upload-image | Upload product image |
+| Concern | Implementation |
+|---|---|
+| Password storage | bcrypt hash — plain text never saved |
+| Session tokens | JWT signed with `SECRET_KEY`, 60 min expiry |
+| API protection | Every endpoint requires `Authorization: Bearer <token>` |
+| Database access | PostgreSQL on Railway's private network — not internet-accessible |
+| Secrets | `SECRET_KEY` and `GROQ_API_KEY` via env vars, never in code |
 
-### Sales & Statistics
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /sales/ | Record a new sale |
-| GET | /sales/ | List all sales (history) |
-| GET | /sales/revenue?period= | Revenue (daily/weekly/monthly) |
-| GET | /sales/best-selling | Top 5 best selling products |
-| GET | /sales/worst-selling | Worst selling products |
-| GET | /sales/average-order | Average order value |
-| GET | /sales/low-stock | Products below stock threshold |
-| GET | /sales/over-time | Sales data over time (chart) |
-| GET | /sales/revenue-by-product | Revenue breakdown per product |
+> **Important:** Always set a strong, unique `SECRET_KEY` in production. The default value is insecure.
 
-## Run with Docker
+---
 
-```bash
-docker-compose up --build
-```
+## 📄 License
 
-Or pull directly from Docker Hub:
-
-```bash
-docker pull ayoubzaro/inventory-management-system:latest
-```
-
-Then open:
-- API docs: http://localhost:8000/docs
-- Frontend: open `frontend/index.html` in your browser
-
-## Run Locally
-
-```bash
-# Activate virtual environment
-.\venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run server
-uvicorn backend.main:app --reload
-```
-
-Your `.env` file should contain:
-
-```env
-DATABASE_URL=sqlite:///./inventory.db
-SECRET_KEY=mysecretkey123
-```
-
-No external database setup needed — SQLite runs out of the box.
-
-## UML Diagrams
-
-See `/docs` folder for:
-- Use case diagram
-- Class diagram (User, Product, Sale)
-- Sequence diagram (login flow + sale flow)
-
-## Database Schema
-
-| Table | Key Fields |
-|-------|-----------|
-| users | id, username, password (hashed) |
-| products | id, name, description, quantity, price, image |
-| sales | id, product_id (FK), quantity, total_price, sold_at |
-
-## Author
-
-Ayoub ZARKOUNI.
+MIT © [Ayoub Zarkouni](https://github.com/AyOuBzArO)
