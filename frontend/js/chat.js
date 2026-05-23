@@ -5,14 +5,32 @@
 (function () {
   "use strict";
 
-  // ── Quick suggestions ────────────────────────────────────────────────────
+  // ── Quick suggestions (text + Lucide-style inline SVG icon) ────────────
   const SUGGESTIONS = [
-    "What's my revenue today?",
-    "Which products are low on stock?",
-    "What's my best-selling product?",
-    "Give me a business summary",
-    "Which products aren't selling?",
-    "How much did I earn this week?",
+    {
+      text: "What's my revenue today?",
+      icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`
+    },
+    {
+      text: "Which products are low on stock?",
+      icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`
+    },
+    {
+      text: "What's my best-selling product?",
+      icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`
+    },
+    {
+      text: "Give me a business summary",
+      icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>`
+    },
+    {
+      text: "Which products aren't selling?",
+      icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>`
+    },
+    {
+      text: "How much did I earn this week?",
+      icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`
+    },
   ];
 
   // ── Conversation history (in-memory, per session) ───────────────────────
@@ -104,12 +122,18 @@
     .ims-chat-avatar {
       width: 38px; height: 38px;
       border-radius: 50%;
-      background: rgba(16,185,129,0.15);
-      border: 1.5px solid rgba(16,185,129,0.4);
+      background: rgba(16,185,129,0.1);
+      border: 1.5px solid rgba(16,185,129,0.3);
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
+      overflow: hidden;
+      padding: 5px;
     }
-    .ims-chat-avatar svg { color: #10b981; }
+    .ims-chat-avatar img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+    }
     .ims-chat-header-info { flex: 1; }
     .ims-chat-header-info strong {
       display: block;
@@ -167,12 +191,14 @@
       padding: 8px 0 4px;
     }
     #ims-chat-welcome .ims-welcome-icon {
-      width: 52px; height: 52px;
+      width: 60px; height: 60px;
       border-radius: 50%;
-      background: rgba(16,185,129,0.1);
-      border: 1.5px solid rgba(16,185,129,0.25);
+      background: rgba(16,185,129,0.08);
+      border: 1.5px solid rgba(16,185,129,0.2);
       display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 12px;
+      margin: 0 auto 14px;
+      overflow: hidden;
+      padding: 8px;
     }
     #ims-chat-welcome h4 {
       color: #f1f5f9;
@@ -193,19 +219,25 @@
       justify-content: center;
     }
     .ims-suggestion-chip {
-      background: rgba(16,185,129,0.08);
-      border: 1px solid rgba(16,185,129,0.2);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(16,185,129,0.07);
+      border: 1px solid rgba(16,185,129,0.18);
       color: #10b981;
       font-size: 11px;
-      padding: 5px 10px;
+      padding: 5px 11px 5px 9px;
       border-radius: 20px;
       cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
       font-family: inherit;
+      white-space: nowrap;
     }
+    .ims-suggestion-chip svg { flex-shrink: 0; opacity: 0.85; }
     .ims-suggestion-chip:hover {
-      background: rgba(16,185,129,0.15);
-      border-color: rgba(16,185,129,0.4);
+      background: rgba(16,185,129,0.14);
+      border-color: rgba(16,185,129,0.38);
+      transform: translateY(-1px);
     }
 
     /* ── Message bubbles ────────────────────────────── */
@@ -234,9 +266,15 @@
       color: #fff;
     }
     .ims-msg.assistant .ims-msg-avatar {
-      background: rgba(99,102,241,0.15);
-      border: 1px solid rgba(99,102,241,0.25);
-      color: #818cf8;
+      background: rgba(16,185,129,0.08);
+      border: 1.5px solid rgba(16,185,129,0.22);
+      padding: 3px;
+      overflow: hidden;
+    }
+    .ims-msg.assistant .ims-msg-avatar img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
     }
     .ims-msg-bubble {
       max-width: calc(100% - 40px);
@@ -280,12 +318,17 @@
     .ims-typing-avatar {
       width: 28px; height: 28px;
       border-radius: 50%;
-      background: rgba(99,102,241,0.15);
-      border: 1px solid rgba(99,102,241,0.25);
+      background: rgba(16,185,129,0.08);
+      border: 1.5px solid rgba(16,185,129,0.22);
       display: flex; align-items: center; justify-content: center;
-      color: #818cf8;
-      font-size: 12px;
       flex-shrink: 0;
+      overflow: hidden;
+      padding: 3px;
+    }
+    .ims-typing-avatar img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
     }
     .ims-typing-bubble {
       background: rgba(255,255,255,0.05);
@@ -399,9 +442,7 @@
   panel.innerHTML = `
     <div id="ims-chat-header">
       <div class="ims-chat-avatar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-        </svg>
+        <img src="/app/ai-avatar.png" alt="IMS Assistant" />
       </div>
       <div class="ims-chat-header-info">
         <strong>IMS Assistant</strong>
@@ -417,9 +458,7 @@
     <div id="ims-chat-messages">
       <div id="ims-chat-welcome">
         <div class="ims-welcome-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-          </svg>
+          <img src="/app/ai-avatar.png" alt="IMS Assistant" style="width:100%;height:100%;object-fit:contain;border-radius:50%;" />
         </div>
         <h4>Your Inventory Analyst</h4>
         <p>Ask me anything about your stock,<br>sales performance, or revenue trends.</p>
@@ -427,9 +466,7 @@
       </div>
       <div id="ims-typing">
         <div class="ims-typing-avatar">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-          </svg>
+          <img src="/app/ai-avatar.png" alt="AI" />
         </div>
         <div class="ims-typing-bubble">
           <div class="ims-typing-dot"></div>
@@ -457,11 +494,11 @@
 
   // ── Populate suggestion chips ────────────────────────────────────────────
   const sugContainer = panel.querySelector(".ims-suggestions");
-  SUGGESTIONS.forEach((text) => {
+  SUGGESTIONS.forEach(({ text, icon }) => {
     const chip = document.createElement("button");
     chip.className = "ims-suggestion-chip";
-    chip.textContent = text;
     chip.type = "button";
+    chip.innerHTML = icon + `<span>${text}</span>`;
     chip.addEventListener("click", () => sendMessage(text));
     sugContainer.appendChild(chip);
   });
@@ -577,7 +614,14 @@
 
     const avatarEl = document.createElement("div");
     avatarEl.className = "ims-msg-avatar";
-    avatarEl.textContent = role === "user" ? "U" : "AI";
+    if (role === "assistant") {
+      const img = document.createElement("img");
+      img.src = "/app/ai-avatar.png";
+      img.alt = "AI";
+      avatarEl.appendChild(img);
+    } else {
+      avatarEl.textContent = "U";
+    }
 
     const bubble = document.createElement("div");
     bubble.className = "ims-msg-bubble" + (isError ? " ims-error-bubble" : "");
