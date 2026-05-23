@@ -99,6 +99,11 @@ A modern, full-stack inventory management application with AI-powered analytics.
 - Python 3.10+
 - [Ollama](https://ollama.com) *(optional — only for local AI)*
 
+## Run in Browser
+
+Try the live demo directly — no setup needed:
+[https://inventory-management-system-production-3b31.up.railway.app/app/login.html](https://inventory-management-system-production-3b31.up.railway.app/app/login.html)
+
 ### Run Locally
 
 ```bash
